@@ -9,6 +9,7 @@ const NavBar = () => {
         <li><Link>Service</Link></li>
         <li><Link>Blog</Link></li>
         <li><Link>Contact</Link></li>
+        <li><Link to='/login'>Login</Link></li>
     </>
     return (
         <div className="navbar bg-base-100">
