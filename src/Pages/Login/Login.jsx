@@ -1,10 +1,13 @@
 import React, { useContext } from 'react';
 import logImg from '../../assets/images/login/login.svg'
-import { Link } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { AuthContext } from '../../Providers/AuthProvider';
 
 const Login = () => {
     const { signIn } = useContext(AuthContext)
+    const location = useLocation();
+    const navigate = useNavigate();
+    const from = location.state?.from?.pathname || '/';
 
     const signInHandler = event => {
         event.preventDefault();
@@ -16,7 +19,30 @@ const Login = () => {
         signIn(email, password)
             .then(res => {
                 const signInUser = res.user;
-                console.log(signInUser);
+                const loggedUser = {
+                    email: signInUser.email
+                }
+                console.log(loggedUser);
+                // navigate(from,{replace: true})
+
+                // Jwt back end hit
+                fetch('http://localhost:5000/jwt', {
+                    method: 'POST',
+                    headers: {
+                        'content-type': 'application/json',
+                    },
+                    body: JSON.stringify(loggedUser)
+
+                })
+                    .then(res => res.json())
+                    .then(data => {
+                        console.log('jsw response:', data);
+                        // add local storage but its not best
+                        localStorage.setItem('Access token', data.token)
+                        navigate(from, { replace: true })
+                    })
+
+
             })
             .catch(error => console.log(error.message))
 
@@ -46,7 +72,7 @@ const Login = () => {
                             </label>
                         </div>
                         <div className="form-control mt-6">
-                            <button type='submit' className="btn btn-primary">Login</button>
+                            <button type='submit' className="btn btn-warning">Login</button>
                         </div>
                     </form>
                     <p className='text-center mb-3'>Or Sign up with</p>
